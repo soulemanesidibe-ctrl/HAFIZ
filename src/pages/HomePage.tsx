@@ -40,8 +40,11 @@ export function HomePage() {
 
   return (
     <div className="page-container">
-      {/* ── Barre compte (discrète, en haut à droite) ── */}
-      <div className="flex justify-end pt-2 min-h-[1.25rem]">
+      {/* ── Barre compte (discrète, en haut à droite) ──
+          relative z-10 : garantit que les contrôles (bouton Déconnexion) restent
+          au-dessus du grand titre حافظ, dont la hauteur de ligne Amiri déborde
+          vers le haut et capturait sinon le tap sur mobile. */}
+      <div className="relative z-10 flex justify-end pt-2 pb-1">
         <AccountMenu />
       </div>
 

@@ -43,20 +43,23 @@ export function AccountMenu() {
   // Connecté
   if (status === 'authenticated' && email) {
     return (
-      <div className="flex flex-col items-end gap-0.5">
-        <span className="text-text-secondary text-[11px] max-w-[140px] truncate" title={email}>
-          {email}
-        </span>
-        <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2">
+        <div className="flex flex-col items-end leading-tight">
+          <span className="text-text-secondary text-[11px] max-w-[120px] truncate" title={email}>
+            {email}
+          </span>
           <SyncIndicator />
-          <button
-            type="button"
-            onClick={() => void signOut()}
-            className="text-[10px] text-gold hover:text-gold/80 transition-colors"
-          >
-            Déconnexion
-          </button>
         </div>
+        {/* Vraie cible tactile : ≥44px de haut, marge confortable, pas collée au bord. */}
+        <button
+          type="button"
+          onClick={() => void signOut()}
+          aria-label="Se déconnecter"
+          className="shrink-0 inline-flex items-center gap-1.5 rounded-lg border border-gold/40 bg-gold/10 px-3 py-2.5 text-xs font-medium text-gold transition-colors hover:bg-gold/20 active:scale-95"
+        >
+          <span aria-hidden>⏻</span>
+          <span>Déconnexion</span>
+        </button>
       </div>
     )
   }

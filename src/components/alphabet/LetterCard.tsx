@@ -6,6 +6,7 @@
 
 import { useState } from 'react'
 import type { ArabicLetter } from '../../types'
+import { speakArabic } from '../../utils/speech'
 
 interface LetterCardProps {
   letter: ArabicLetter
@@ -24,8 +25,23 @@ const FORM_LABELS: Record<FormKey, string> = {
 
 export function LetterCard({ letter, isLearned, onMarkLearned }: LetterCardProps) {
   const [activeForm, setActiveForm] = useState<FormKey>('isolated')
+  const [audioNote, setAudioNote] = useState<string | null>(null)
 
   const currentGlyph = letter[activeForm]
+
+  const handleListen = async () => {
+    setAudioNote(null)
+    // On prononce le NOM de la lettre (ex. « بَاء ») : c'est la prononciation
+    // de référence pour l'apprentissage de l'alphabet.
+    const result = await speakArabic(letter.name)
+    if (result === 'unsupported') {
+      setAudioNote("La synthèse vocale n'est pas disponible sur ce navigateur.")
+    } else if (result === 'no-arabic-voice') {
+      setAudioNote(
+        'Aucune voix arabe installée sur cet appareil. Ajoute « Arabe » dans les réglages voix/synthèse vocale du téléphone pour entendre la lettre.',
+      )
+    }
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -104,19 +120,20 @@ export function LetterCard({ letter, isLearned, onMarkLearned }: LetterCardProps
         </div>
       </div>
 
+      {/* Note audio éventuelle (voix arabe absente, etc.) */}
+      {audioNote && (
+        <p className="text-amber-400/90 text-xs bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2">
+          {audioNote}
+        </p>
+      )}
+
       {/* Actions */}
       <div className="flex gap-3">
-        {/* Bouton écouter (simulé) */}
+        {/* Bouton écouter la prononciation de la lettre */}
         <button
+          type="button"
           className="flex-1 flex items-center justify-center gap-2 bg-[#1A2332] border border-[#2A3140] rounded-xl py-3 text-text-secondary hover:text-text-primary transition-colors text-sm"
-          onClick={() => {
-            // Simulation audio — à remplacer par audioUrl quand disponible
-            if ('speechSynthesis' in window) {
-              const utt = new SpeechSynthesisUtterance(letter.isolated)
-              utt.lang = 'ar-SA'
-              window.speechSynthesis.speak(utt)
-            }
-          }}
+          onClick={() => void handleListen()}
         >
           <span className="text-lg">🔊</span>
           <span>Écouter</span>

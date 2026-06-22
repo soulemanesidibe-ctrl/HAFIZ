@@ -111,12 +111,21 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 
   signOut: async () => {
-    if (!supabase) {
-      set({ user: null, status: 'anonymous' })
-      return
+    // On réinitialise toujours l'état local, quoi qu'il arrive côté réseau :
+    // si supabase.auth.signOut() échoue (réseau, session déjà expirée,
+    // AuthSessionMissingError…), l'utilisateur doit malgré tout être déconnecté
+    // dans l'interface. Sans ce try/catch, une erreur laissait le bouton inactif.
+    try {
+      if (supabase) {
+        // 'local' : invalide la session de cet appareil sans appel réseau
+        // bloquant qui pourrait échouer hors-ligne.
+        await supabase.auth.signOut({ scope: 'local' })
+      }
+    } catch {
+      // Ignoré volontairement : on force la déconnexion locale ci-dessous.
+    } finally {
+      set({ user: null, status: 'anonymous', error: null })
     }
-    await supabase.auth.signOut()
-    set({ user: null, status: 'anonymous', error: null })
   },
 
   clearError: () => set({ error: null }),

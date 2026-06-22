@@ -6,7 +6,11 @@ import { AudioPlayer } from '../components/AudioPlayer'
 import { RepetitionCounter } from '../components/RepetitionCounter'
 import { DuaSession } from '../components/DuaSession'
 import { VerseCard } from '../components/hifz/VerseCard'
+import { EncouragementCard } from '../components/EncouragementCard'
+import { ENCOURAGEMENTS } from '../data/encouragements'
 import type { SM2Quality, SurahInfo, Verse } from '../types'
+
+const LISTEN_VERSE = ENCOURAGEMENTS.find((e) => e.id === 'follow-recitation')
 
 type Mode = 'listen' | 'memorize' | 'review'
 
@@ -226,6 +230,7 @@ export function SurahStudyPage() {
         {/* ═══════════ MODE ÉCOUTE ═══════════ */}
         {mode === 'listen' && (
           <div className="space-y-4">
+            {LISTEN_VERSE && <EncouragementCard encouragement={LISTEN_VERSE} />}
             {verses[currentVerseIdx]?.audioUrl && (
               <AudioPlayer
                 audioUrl={verses[currentVerseIdx].audioUrl as string}

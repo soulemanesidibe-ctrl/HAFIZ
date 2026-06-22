@@ -20,7 +20,11 @@ import { useProgressStore } from '../store/progressStore'
 import { LetterGrid } from '../components/alphabet/LetterGrid'
 import { LetterCard } from '../components/alphabet/LetterCard'
 import { AlphabetQuiz } from '../components/alphabet/AlphabetQuiz'
+import { EncouragementCard } from '../components/EncouragementCard'
+import { ENCOURAGEMENTS } from '../data/encouragements'
 import type { ArabicLetter } from '../types'
+
+const IQRA = ENCOURAGEMENTS.find((e) => e.id === 'iqra')
 
 type Tab = 'lesson' | 'quiz'
 type GroupFilter = 'toutes' | 'solaire' | 'lunaire'
@@ -91,6 +95,9 @@ export function AlphabetPage() {
                 L'Alphabet Arabe
               </p>
             </div>
+
+            {/* Le tout premier enseignement : Jibril ﷺ dit « Lis » au Prophète ﷺ */}
+            {IQRA && <EncouragementCard encouragement={IQRA} className="mb-5" />}
 
             {/* Progress bar */}
             <div className="bg-[#1A2332] rounded-xl border border-[#2A3140] p-4 mb-5">

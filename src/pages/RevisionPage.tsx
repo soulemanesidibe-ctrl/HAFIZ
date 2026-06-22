@@ -14,7 +14,11 @@ import { Link } from 'react-router-dom'
 import { useProgressStore, useStreak } from '../store/progressStore'
 import { getVerse, getSurahList } from '../services/quranApi'
 import { StatsCard } from '../components/StatsCard'
+import { EncouragementCard } from '../components/EncouragementCard'
+import { ENCOURAGEMENTS } from '../data/encouragements'
 import type { VerseProgress, Verse, SM2Quality, SurahInfo } from '../types'
+
+const JIBRIL_REVISION = ENCOURAGEMENTS.find((e) => e.id === 'jibril-revision')
 
 type Phase = 'idle' | 'reviewing' | 'done'
 
@@ -218,11 +222,14 @@ export function RevisionPage() {
 
             {/* ── Stats rapides ── */}
             <p className="section-title">Aperçu</p>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-3 mb-6">
               <StatsCard icon="🔥" label="Jours consécutifs" value={streak} />
               <StatsCard icon="📚" label="Versets mémorisés" value={totalMemorized} />
               <StatsCard icon="✓" label="Taux de rétention" value={retentionRate} unit="%" />
             </div>
+
+            {/* Le murajaah est une sunna : Jibril ﷺ révisait avec le Prophète ﷺ */}
+            {JIBRIL_REVISION && <EncouragementCard encouragement={JIBRIL_REVISION} />}
           </>
         )}
 

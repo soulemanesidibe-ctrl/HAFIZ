@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { getSurahList } from '../services/quranApi'
 import { useProgressStore } from '../store/progressStore'
 import { SurahCard } from '../components/hifz/SurahCard'
+import { EncouragementCard } from '../components/EncouragementCard'
+import { encouragementOfDay } from '../data/encouragements'
 import type { SurahInfo } from '../types'
 
 /** Bornes du Juz Amma : sourates 78 (An-Naba) à 114 (An-Nas) */
@@ -14,6 +16,7 @@ export function HifzPage() {
   const [error, setError] = useState<string | null>(null)
 
   const memorizedVerses = useProgressStore((s) => s.memorizedVerses)
+  const hifzVerse = encouragementOfDay('hifz')
 
   useEffect(() => {
     let active = true
@@ -59,10 +62,15 @@ export function HifzPage() {
           </p>
         </div>
 
+        {/* Encouragement : Allah a promis que le Coran serait facile à retenir */}
+        {hifzVerse && <EncouragementCard encouragement={hifzVerse} className="mb-4" />}
+
         {/* Note pédagogique */}
         <div className="bg-[#1A2332] rounded-xl border border-[#2A3140] p-4 mb-6">
           <p className="text-text-secondary text-sm leading-relaxed text-center">
-            Les savants recommandent de commencer par le Juz Amma.
+            On commence par le Juz Amma : ses sourates sont courtes, vous les
+            entendez à chaque prière, et c'est par là que la plupart des huffaz
+            ont débuté. Une sourate à la fois, sans vous presser.
           </p>
         </div>
 

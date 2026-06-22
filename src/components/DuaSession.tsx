@@ -13,9 +13,15 @@ export function DuaSession({ isOpen, onClose }: DuaSessionProps) {
     >
       <div className="mx-4 w-full max-w-sm bg-[#1A2332] border border-[#2A3A4F] rounded-2xl p-6 shadow-2xl animate-fadeIn">
         {/* Title */}
-        <h2 className="text-[#C9A84C] font-semibold text-center text-base tracking-wide uppercase mb-6">
+        <h2 className="text-[#C9A84C] font-semibold text-center text-base tracking-wide uppercase mb-2">
           Dua avant la mémorisation
         </h2>
+
+        {/* Intention : on commence par se tourner vers Allah */}
+        <p className="text-gray-400 text-xs text-center leading-relaxed mb-6">
+          Prenez un instant. Avant d'apprendre, on demande à Allah de rendre
+          utile ce qu'on s'apprête à mémoriser.
+        </p>
 
         {/* Decorative divider */}
         <div className="flex items-center gap-3 mb-6">

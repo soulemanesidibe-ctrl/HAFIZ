@@ -3,6 +3,8 @@ import { useProgressStore, useOverallProgress, useDueCount, useStreak } from '..
 import { ProgressRing } from '../components/ProgressRing'
 import { StatsCard } from '../components/StatsCard'
 import { AccountMenu } from '../components/AccountMenu'
+import { EncouragementCard } from '../components/EncouragementCard'
+import { encouragementOfDay } from '../data/encouragements'
 
 /** Sourates du Juz 'Amma (78 → 114) */
 const JUZ_AMMA_FIRST = 78
@@ -38,6 +40,9 @@ export function HomePage() {
     sessions.reduce((acc, s) => acc + s.durationSeconds, 0) / 60,
   )
 
+  // Encouragement du jour (verset ou hadith authentique, change chaque jour)
+  const daily = encouragementOfDay('home')
+
   return (
     <div className="page-container">
       {/* ── Barre compte (discrète, en haut à droite) ──
@@ -55,9 +60,12 @@ export function HomePage() {
         </h1>
         <p className="text-text-secondary text-sm tracking-widest uppercase">Hafiz</p>
         <p className="text-gray-500 text-xs mt-1">
-          Votre compagnon pour la mémorisation du Coran
+          Votre compagnon, pas à pas, sur le chemin du Coran
         </p>
       </div>
+
+      {/* ── Encouragement du jour ── */}
+      {daily && <EncouragementCard encouragement={daily} className="mb-6" />}
 
       {/* ── Bandeau révisions dues ── */}
       {dueCount > 0 && (

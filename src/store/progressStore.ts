@@ -86,6 +86,15 @@ export interface ProgressStore {
 
   // ── Utilitaires ───────────────────────────────────────────
   resetAllProgress: () => void
+  /**
+   * Vide la progression locale à la déconnexion : l'avancée appartient à la
+   * session de l'utilisateur, on ne doit donc plus l'afficher une fois déconnecté
+   * (ni la laisser fuiter vers un autre compte sur le même appareil).
+   * `lastModified` est remis à l'époque (epoch) pour qu'à la reconnexion le
+   * snapshot cloud soit TOUJOURS considéré plus récent et restauré — sans risque
+   * d'écraser les données distantes avec un état vide.
+   */
+  clearSessionProgress: () => void
   getOverallProgress: () => {
     totalLettersLearned: number
     totalVersesInHifz: number
@@ -363,6 +372,10 @@ export const useProgressStore = create<ProgressStore>()(
       // ── Utilitaires ────────────────────────────────────────
 
       resetAllProgress: () => set(INITIAL_STATE),
+
+      // rawSet (et non set) : on garde lastModified = epoch défini dans
+      // INITIAL_STATE, pour que le cloud gagne à la reconnexion.
+      clearSessionProgress: () => rawSet(INITIAL_STATE),
 
       getOverallProgress: () => {
         const { learnedLetters, memorizedVerses, dailyStats } = get()

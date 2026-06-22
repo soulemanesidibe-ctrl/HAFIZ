@@ -10,6 +10,7 @@
 
 import { create } from 'zustand'
 import { supabase, isSupabaseConfigured } from '../services/supabase'
+import { useProgressStore } from './progressStore'
 
 export interface AuthUser {
   id: string
@@ -125,6 +126,10 @@ export const useAuthStore = create<AuthState>((set) => ({
       // Ignoré volontairement : on force la déconnexion locale ci-dessous.
     } finally {
       set({ user: null, status: 'anonymous', error: null })
+      // L'avancée appartient à la session : on vide la progression locale pour
+      // ne plus l'afficher après déconnexion. lastModified=epoch garantit que la
+      // version cloud sera restaurée (et non écrasée) à la prochaine connexion.
+      useProgressStore.getState().clearSessionProgress()
     }
   },
 

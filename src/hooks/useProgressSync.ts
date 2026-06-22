@@ -115,6 +115,9 @@ export function useProgressSync() {
       if (debounceTimer.current) clearTimeout(debounceTimer.current)
       debounceTimer.current = setTimeout(() => {
         void (async () => {
+          // Garde-fou : ne jamais pousser si l'utilisateur s'est déconnecté
+          // entre-temps (sinon on écraserait le cloud avec une progression vidée).
+          if (useAuthStore.getState().status !== 'authenticated') return
           setSyncStatus('syncing')
           try {
             const snapshot = useProgressStore.getState().exportSnapshot()

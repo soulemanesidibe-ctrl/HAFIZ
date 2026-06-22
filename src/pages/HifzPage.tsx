@@ -4,7 +4,12 @@ import { useProgressStore } from '../store/progressStore'
 import { SurahCard } from '../components/hifz/SurahCard'
 import { EncouragementCard } from '../components/EncouragementCard'
 import { encouragementOfDay } from '../data/encouragements'
+import { MethodCard } from '../components/MethodCard'
+import { methodById } from '../data/methods'
 import type { SurahInfo } from '../types'
+
+const SABAQ = methodById('sabaq-sabqi-manzil')
+const TALAQQI = methodById('talaqqi')
 
 /** Bornes du Juz Amma : sourates 78 (An-Naba) à 114 (An-Nas) */
 const JUZ_AMMA_FIRST = 78
@@ -66,12 +71,18 @@ export function HifzPage() {
         {hifzVerse && <EncouragementCard encouragement={hifzVerse} className="mb-4" />}
 
         {/* Note pédagogique */}
-        <div className="bg-[#1A2332] rounded-xl border border-[#2A3140] p-4 mb-6">
+        <div className="bg-[#1A2332] rounded-xl border border-[#2A3140] p-4 mb-4">
           <p className="text-text-secondary text-sm leading-relaxed text-center">
             On commence par le Juz Amma : ses sourates sont courtes, vous les
             entendez à chaque prière, et c'est par là que la plupart des huffaz
             ont débuté. Une sourate à la fois, sans vous presser.
           </p>
+        </div>
+
+        {/* Méthodes reconnues : structure du hifz + apprendre face à un maître */}
+        <div className="space-y-3 mb-6">
+          {SABAQ && <MethodCard method={SABAQ} />}
+          {TALAQQI && <MethodCard method={TALAQQI} />}
         </div>
 
         {/* Loading skeleton */}

@@ -8,9 +8,12 @@ import { DuaSession } from '../components/DuaSession'
 import { VerseCard } from '../components/hifz/VerseCard'
 import { EncouragementCard } from '../components/EncouragementCard'
 import { ENCOURAGEMENTS } from '../data/encouragements'
+import { MethodCard } from '../components/MethodCard'
+import { methodOfDay } from '../data/methods'
 import type { SM2Quality, SurahInfo, Verse } from '../types'
 
 const LISTEN_VERSE = ENCOURAGEMENTS.find((e) => e.id === 'follow-recitation')
+const MEMORIZE_METHOD = methodOfDay('memorize')
 
 type Mode = 'listen' | 'memorize' | 'review'
 
@@ -324,6 +327,9 @@ export function SurahStudyPage() {
               target={MEMORIZE_TARGET}
               onIncrement={() => setRepCount((c) => c + 1)}
             />
+
+            {/* Conseil de méthode pour bien ancrer le verset */}
+            {MEMORIZE_METHOD && <MethodCard method={MEMORIZE_METHOD} />}
 
             {/* Bouton marquer mémorisé (après objectif) */}
             {repCount >= MEMORIZE_TARGET && (

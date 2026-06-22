@@ -16,6 +16,8 @@ import { getVerse, getSurahList } from '../services/quranApi'
 import { StatsCard } from '../components/StatsCard'
 import { EncouragementCard } from '../components/EncouragementCard'
 import { ENCOURAGEMENTS } from '../data/encouragements'
+import { MethodCard } from '../components/MethodCard'
+import { methodOfDay } from '../data/methods'
 import type { VerseProgress, Verse, SM2Quality, SurahInfo } from '../types'
 
 const JIBRIL_REVISION = ENCOURAGEMENTS.find((e) => e.id === 'jibril-revision')
@@ -41,6 +43,7 @@ export function RevisionPage() {
   const getDueVersesList = useProgressStore((s) => s.getDueVersesList)
   const updateVerseProgress = useProgressStore((s) => s.updateVerseProgress)
   const streak = useStreak()
+  const revisionMethod = methodOfDay('revision')
 
   // Versets mémorisés (total) + taux de rétention (maîtrisés / total)
   const allVerses = useMemo(() => Object.values(memorizedVerses), [memorizedVerses])
@@ -229,7 +232,10 @@ export function RevisionPage() {
             </div>
 
             {/* Le murajaah est une sunna : Jibril ﷺ révisait avec le Prophète ﷺ */}
-            {JIBRIL_REVISION && <EncouragementCard encouragement={JIBRIL_REVISION} />}
+            {JIBRIL_REVISION && <EncouragementCard encouragement={JIBRIL_REVISION} className="mb-3" />}
+
+            {/* Pourquoi réviser ainsi : la science de la mémoire */}
+            {revisionMethod && <MethodCard method={revisionMethod} />}
           </>
         )}
 

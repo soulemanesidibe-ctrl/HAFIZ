@@ -5,6 +5,8 @@ import { StatsCard } from '../components/StatsCard'
 import { AccountMenu } from '../components/AccountMenu'
 import { EncouragementCard } from '../components/EncouragementCard'
 import { encouragementOfDay } from '../data/encouragements'
+import { MethodCard } from '../components/MethodCard'
+import { methodOfDay } from '../data/methods'
 
 /** Sourates du Juz 'Amma (78 → 114) */
 const JUZ_AMMA_FIRST = 78
@@ -42,6 +44,8 @@ export function HomePage() {
 
   // Encouragement du jour (verset ou hadith authentique, change chaque jour)
   const daily = encouragementOfDay('home')
+  // Conseil de méthode du jour (apprentissage / mémorisation)
+  const tip = methodOfDay('home')
 
   return (
     <div className="page-container">
@@ -130,6 +134,14 @@ export function HomePage() {
           </Link>
         ))}
       </div>
+
+      {/* ── Conseil de méthode du jour ── */}
+      {tip && (
+        <>
+          <p className="section-title mt-6">Conseil du jour</p>
+          <MethodCard method={tip} />
+        </>
+      )}
     </div>
   )
 }

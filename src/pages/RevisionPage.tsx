@@ -18,6 +18,8 @@ import { EncouragementCard } from '../components/EncouragementCard'
 import { ENCOURAGEMENTS } from '../data/encouragements'
 import { MethodCard } from '../components/MethodCard'
 import { methodOfDay } from '../data/methods'
+import { SabaqDashboard } from '../components/SabaqDashboard'
+import { classifySabaq, type SabaqBucket } from '../utils/sabaq'
 import type { VerseProgress, Verse, SM2Quality, SurahInfo } from '../types'
 
 const JIBRIL_REVISION = ENCOURAGEMENTS.find((e) => e.id === 'jibril-revision')
@@ -48,6 +50,9 @@ export function RevisionPage() {
   // Versets mémorisés (total) + taux de rétention (maîtrisés / total)
   const allVerses = useMemo(() => Object.values(memorizedVerses), [memorizedVerses])
   const totalMemorized = allVerses.length
+
+  // Répartition Sabaq · Sabqi · Manzil (méthode des écoles de hifz)
+  const sabaqGroups = useMemo(() => classifySabaq(memorizedVerses), [memorizedVerses])
   const masteredCount = allVerses.filter((v) => v.status === 'maitrise').length
   const retentionRate =
     totalMemorized > 0 ? Math.round((masteredCount / totalMemorized) * 100) : 0
@@ -113,15 +118,27 @@ export function RevisionPage() {
   }, [phase, current])
 
   // ── Actions ──────────────────────────────────────────────
-  const startReview = useCallback(() => {
-    const due = getDueVersesList()
+  const startReviewWith = useCallback((due: VerseProgress[]) => {
     if (due.length === 0) return
     setQueue(due)
     setIndex(0)
     setSessionCount(0)
     setRevealed(false)
     setPhase('reviewing')
-  }, [getDueVersesList])
+  }, [])
+
+  const startReview = useCallback(() => {
+    startReviewWith(getDueVersesList())
+  }, [getDueVersesList, startReviewWith])
+
+  // Révise uniquement un niveau Sabaq/Sabqi/Manzil (ses versets dus du jour)
+  const reviewBucket = useCallback(
+    (bucket: SabaqBucket) => {
+      const group = sabaqGroups.find((g) => g.key === bucket)
+      if (group) startReviewWith(group.due)
+    },
+    [sabaqGroups, startReviewWith],
+  )
 
   const handleEval = useCallback(
     (quality: SM2Quality) => {
@@ -222,6 +239,13 @@ export function RevisionPage() {
                 </>
               )}
             </div>
+
+            {/* ── Tableau Sabaq · Sabqi · Manzil ── */}
+            {totalMemorized > 0 && (
+              <div className="mb-6">
+                <SabaqDashboard groups={sabaqGroups} onReview={reviewBucket} />
+              </div>
+            )}
 
             {/* ── Stats rapides ── */}
             <p className="section-title">Aperçu</p>

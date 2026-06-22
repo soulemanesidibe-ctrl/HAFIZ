@@ -30,6 +30,22 @@ Application web PWA pour **apprendre l'arabe coranique** et **mémoriser le Cora
 
 React 19 · Vite 6 · TypeScript · Tailwind CSS · Zustand · vite-plugin-pwa · API [Al-Quran Cloud](https://alquran.cloud/api) (gratuite) · audio [islamic.network](https://islamic.network) (gratuit).
 
+## Comptes utilisateurs & synchronisation (Supabase)
+
+L'app fonctionne en **mode local** (localStorage) sans aucune configuration. Pour activer les **comptes** et la **synchronisation multi-appareils**, configure un projet Supabase dédié (séparé de tout autre projet) :
+
+1. Crée un projet gratuit sur [supabase.com](https://supabase.com) (ex. `hafiz`).
+2. Dans le projet → **SQL Editor** → colle et exécute le contenu de [`supabase/schema.sql`](supabase/schema.sql) (crée la table `user_progress` + sécurité RLS).
+3. Dans **Project Settings → API**, copie l'`URL` et la clé `anon public`.
+4. Crée un fichier `.env` à la racine (copie de `.env.example`) et remplis :
+   ```
+   VITE_SUPABASE_URL=https://xxxx.supabase.co
+   VITE_SUPABASE_ANON_KEY=eyJhb...
+   ```
+5. Sur Vercel, ajoute ces deux variables dans **Settings → Environment Variables**, puis redéploie.
+
+Sans ces variables, l'app reste en « Mode local » (aucun impact). Avec, un bouton **Se connecter** apparaît : la progression de chaque module est sauvegardée dans le cloud et synchronisée entre téléphone et PC.
+
 ## Développement
 
 ```bash

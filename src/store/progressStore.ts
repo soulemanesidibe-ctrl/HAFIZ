@@ -76,6 +76,14 @@ export interface ProgressStore {
   getTodayStats: () => DailyStats
   recordDailyActivity: (versesStudied: number, reviewsCompleted?: number) => void
 
+  // ── Synchronisation cloud ─────────────────────────────────
+  /** Date ISO de la dernière modification locale de la slice persistée */
+  lastModified: string
+  /** Retourne la slice persistée + lastModified (pour push vers Supabase) */
+  exportSnapshot: () => ProgressSnapshot
+  /** Remplace l'état local par un snapshot distant (pour pull depuis Supabase) */
+  importSnapshot: (snapshot: ProgressSnapshot) => void
+
   // ── Utilitaires ───────────────────────────────────────────
   resetAllProgress: () => void
   getOverallProgress: () => {
@@ -84,6 +92,17 @@ export interface ProgressStore {
     totalVersesMemorized: number
     currentStreak: number
   }
+}
+
+/** Slice persistée du store + horodatage, pour la synchronisation cloud. */
+export interface ProgressSnapshot {
+  learnedLetters: number[]
+  memorizedVerses: Record<string, VerseProgress>
+  reviewQueue: ReviewItem[]
+  lastSession: string | null
+  sessions: HifzSession[]
+  dailyStats: Record<string, DailyStats>
+  lastModified: string
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -98,6 +117,7 @@ const INITIAL_STATE = {
   currentSessionStart: null as string | null,
   sessions: [] as HifzSession[],
   dailyStats: {} as Record<string, DailyStats>,
+  lastModified: new Date(0).toISOString(),
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -142,7 +162,25 @@ function computeStreak(dailyStats: Record<string, DailyStats>): number {
 
 export const useProgressStore = create<ProgressStore>()(
   persist(
-    (set, get) => ({
+    (rawSet, get) => {
+      // Wrapper de `set` qui horodate chaque mutation (lastModified) afin que la
+      // synchronisation cloud sache quelle version est la plus récente.
+      // `importSnapshot`/`resetAllProgress` utilisent `rawSet` directement pour
+      // contrôler eux-mêmes lastModified.
+      const set: typeof rawSet = ((partial, replace) => {
+        if (typeof partial === 'function') {
+          return rawSet((state) => {
+            const next = (partial as (s: ProgressStore) => Partial<ProgressStore>)(state)
+            return { ...next, lastModified: new Date().toISOString() }
+          }, replace as false | undefined)
+        }
+        return rawSet(
+          { ...partial, lastModified: new Date().toISOString() },
+          replace as false | undefined,
+        )
+      }) as typeof rawSet
+
+      return {
       ...INITIAL_STATE,
 
       // ── Alphabet ───────────────────────────────────────────
@@ -296,6 +334,32 @@ export const useProgressStore = create<ProgressStore>()(
         })
       },
 
+      // ── Synchronisation cloud ──────────────────────────────
+
+      exportSnapshot: () => {
+        const s = get()
+        return {
+          learnedLetters: s.learnedLetters,
+          memorizedVerses: s.memorizedVerses,
+          reviewQueue: s.reviewQueue,
+          lastSession: s.lastSession,
+          sessions: s.sessions,
+          dailyStats: s.dailyStats,
+          lastModified: s.lastModified,
+        }
+      },
+
+      importSnapshot: (snapshot) =>
+        rawSet({
+          learnedLetters: snapshot.learnedLetters,
+          memorizedVerses: snapshot.memorizedVerses,
+          reviewQueue: snapshot.reviewQueue,
+          lastSession: snapshot.lastSession,
+          sessions: snapshot.sessions,
+          dailyStats: snapshot.dailyStats,
+          lastModified: snapshot.lastModified,
+        }),
+
       // ── Utilitaires ────────────────────────────────────────
 
       resetAllProgress: () => set(INITIAL_STATE),
@@ -310,7 +374,8 @@ export const useProgressStore = create<ProgressStore>()(
           currentStreak: computeStreak(dailyStats),
         }
       },
-    }),
+      }
+    },
 
     {
       name: 'hafiz-progress-v1', // clé localStorage
@@ -327,6 +392,7 @@ export const useProgressStore = create<ProgressStore>()(
         lastSession: state.lastSession,
         sessions: state.sessions,
         dailyStats: state.dailyStats,
+        lastModified: state.lastModified,
       }),
 
       /**

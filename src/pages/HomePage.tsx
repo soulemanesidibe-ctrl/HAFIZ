@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { useProgressStore, useOverallProgress, useDueCount, useStreak } from '../store/progressStore'
 import { ProgressRing } from '../components/ProgressRing'
 import { StatsCard } from '../components/StatsCard'
+import { AccountMenu } from '../components/AccountMenu'
 
 /** Sourates du Juz 'Amma (78 → 114) */
 const JUZ_AMMA_FIRST = 78
@@ -39,8 +40,13 @@ export function HomePage() {
 
   return (
     <div className="page-container">
+      {/* ── Barre compte (discrète, en haut à droite) ── */}
+      <div className="flex justify-end pt-2 min-h-[1.25rem]">
+        <AccountMenu />
+      </div>
+
       {/* ── En-tête ── */}
-      <div className="mb-6 text-center pt-2">
+      <div className="mb-6 text-center">
         <h1 lang="ar" dir="rtl" className="font-amiri text-gold text-5xl mb-1">
           حافظ
         </h1>
